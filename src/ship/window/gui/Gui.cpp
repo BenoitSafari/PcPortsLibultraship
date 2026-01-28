@@ -31,7 +31,7 @@
 #endif
 
 #if defined(__ANDROID__) || defined(__IOS__)
-#include "port/mobile/MobileImpl.h"
+#include "ship/port/mobile/MobileImpl.h"
 #endif
 
 #ifdef ENABLE_OPENGL
@@ -502,6 +502,14 @@ int16_t Gui::GetIntegerScaleFactor() {
 }
 
 void Gui::DrawMenu() {
+#if defined(__ANDROID__)
+    if (GetMenuOrMenubarVisible()) {
+        Ship::Mobile::DisableTouchArea();
+    } else {
+        Ship::Mobile::EnableTouchArea();
+    }
+#endif
+
     const std::shared_ptr<Window> wnd = Context::GetInstance()->GetWindow();
     const std::shared_ptr<Config> conf = Context::GetInstance()->GetConfig();
 
