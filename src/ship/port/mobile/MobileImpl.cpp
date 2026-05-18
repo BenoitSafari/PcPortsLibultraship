@@ -40,7 +40,13 @@ void Ship::Mobile::ImGuiProcessEvent(bool wantsTextInput) {
 #define SHIP_ANDROID_JNI_CLASS com_libultraship_android_MainActivity
 #endif
 
-#define SHIP_ANDROID_JNI_METHOD(name) Java_##SHIP_ANDROID_JNI_CLASS##_##name
+// Two-level expansion so SHIP_ANDROID_JNI_CLASS gets substituted to its value
+// before the ## concatenation happens. Without the indirection the symbol
+// becomes the literal "Java_SHIP_ANDROID_JNI_CLASS_<name>" and the JNI
+// lookup fails with UnsatisfiedLinkError at runtime.
+#define SHIP_JNI_METHOD_IMPL(klass, name) Java_##klass##_##name
+#define SHIP_JNI_METHOD_EXPAND(klass, name) SHIP_JNI_METHOD_IMPL(klass, name)
+#define SHIP_ANDROID_JNI_METHOD(name) SHIP_JNI_METHOD_EXPAND(SHIP_ANDROID_JNI_CLASS, name)
 
 bool Ship::Mobile::IsUsingTouchscreenControls() {
     return isUsingTouchscreenControls;
